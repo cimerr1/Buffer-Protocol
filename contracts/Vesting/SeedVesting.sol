@@ -83,7 +83,7 @@ contract Vesting is Ownable{
     }
 
     /**
-     * @dev Allot tokens to users
+     * @dev Allot tokens to users and transfer that many tokens to the contract
      * @param _users - Array of user addresses for alloting the tokens.
      * @param _tokenAmounts - Array of token amounts alloted to users.
      * @notice - Access control: Public onlyOwner.
@@ -96,9 +96,14 @@ contract Vesting is Ownable{
         require(len>0, "Invalid length");
         require(len == _tokenAmounts.length, "Wrong ranges");
 
+        uint256 totalAllotedAmount;
+
         for (uint256 n=0; n<len; n++) {
             tokensAlloted[_users[n]] = _tokenAmounts[n];
+            totalAllotedAmount += _tokenAmounts[n];
         }
+
+        token.safeTransferFrom(owner(), address(this), totalAllotedAmount);
     }
 
     /**
