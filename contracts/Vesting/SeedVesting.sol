@@ -99,7 +99,9 @@ contract Vesting is Ownable{
         uint256 totalAllotedAmount;
 
         for (uint256 n=0; n<len; n++) {
-            tokensAlloted[_users[n]] = _tokenAmounts[n];
+            address _user = _users[n]; 
+            isRevoked[_user] = false;
+            tokensAlloted[_user] += _tokenAmounts[n];
             totalAllotedAmount += _tokenAmounts[n];
         }
 
@@ -145,6 +147,8 @@ contract Vesting is Ownable{
      * @param _user Address for which the tokens will be released
      */
     function revoke(address _user) public onlyOwner {
+        require(!isRevoked[_user], "User is already revoked");
+
         uint256 refund = tokensAlloted[_user] - tokensClaimed[_user];
         require(refund > 0, "TokenVesting: no tokens are due");
 
